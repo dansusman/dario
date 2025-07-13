@@ -8,6 +8,15 @@
     {{ partial "header.html" . }}
 
     <main class="content-wrapper">
+        {{ if .TableOfContents }}
+        <nav class="toc-sidebar toc-title-aligned" id="toc-sidebar">
+            <div class="toc-header" id="toc-toggle">Contents</div>
+            <div class="toc-content" id="toc-content">
+                {{ .TableOfContents }}
+            </div>
+        </nav>
+        {{ end }}
+        
         <article class="content-container">
             <h1>{{ .Title }}</h1>
             <h4>{{ .Params.description }}</h4>

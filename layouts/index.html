@@ -10,16 +10,15 @@
         <article class="content-container">
             {{- with site.Params.homeInfoParams }}
             <section>
-                <h1 class="smaller">{{ .Title | markdownify }}</h1>
                 <p>{{ .Content | markdownify }}</p>
                 <p>{{ .SubContent | markdownify }}</p>
             </section>
             {{- end }}
 
             <section>
-                <h2>Posts</h2>
+                <h3>Short posts</h3>
                 <ul>
-                    {{ range .Site.RegularPages }}
+                    {{ range where .Site.RegularPages "Params.type" "short" }}
                     <li>
                         <a href="{{ .Permalink }}">{{ .Title }}</a>
                     </li>
@@ -27,9 +26,20 @@
                 </ul>
             </section>
 
-        {{ partial "footer.html" . }}
+            <section>
+                <h3>Essays</h3>
+                <ul>
+                    {{ range where .Site.RegularPages "Params.type" "essay" }}
+                    <li>
+                        <a href="{{ .Permalink }}">{{ .Title }}</a>
+                    </li>
+                    {{ end }}
+                </ul>
+            </section>
         </article>
     </main>
+
+    {{ partial "footer.html" . }}
 </body>
 
 </html>
