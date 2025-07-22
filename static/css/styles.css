@@ -2,25 +2,10 @@
   transition: none;
 }
 
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: block;
-  src: url("../fonts/Newsreader.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 200 800;
-  font-display: block;
-  src: url("../fonts/Newsreader-italic.woff2") format("woff2");
-}
 
 :root {
   --radius: 8px;
-  --bg-color: #f0efea;
+  --bg-color: #ffffff;
   --text-color: #141413;
   --border-color: #e6e4dd;
   --footnote-bg-color: rgba(0, 0, 0, 0.08);
@@ -30,7 +15,7 @@
   --tooltip-shadow-color: rgba(0, 0, 0, 0.15);
   --highlight-color: rgba(137, 137, 222, 0.3);
   --font-size-base: 20px;
-  --content-max-width: 740px;
+  --content-max-width: 900px;
   --content-padding: 0 20px;
   --focus-color: #0066cc;
   --subscribe-form-bg: transparent;
@@ -58,7 +43,7 @@ html.js-loaded {
 header h1 a {
   display: block;
   width: 140px;
-  font-family: Newsreader, serif;
+  font-family: "Playfair Display", serif;
 }
 
 /* Dark Mode Variables */
@@ -108,7 +93,7 @@ body {
 }
 
 body {
-  font-family: "Newsreader", serif;
+  font-family: "Inter", sans-serif;
   font-size: var(--font-size-base);
   font-weight: 400;
   line-height: 1.6;
@@ -236,7 +221,7 @@ header > div {
 
 header h1,
 header h1 a {
-  font-family: "Newsreader", serif;
+  font-family: "Playfair Display", serif;
   font-weight: 600;
   font-size: 1.2em;
   line-height: 44px;
@@ -337,16 +322,15 @@ html.js-loaded .header-controls {
 h1,
 h2,
 h3,
-.author-date,
 .mobile-toc-link,
 .toc-container h2 {
-  font-family: "Newsreader", serif;
+  font-family: "Playfair Display", serif;
   font-weight: 400;
   line-height: 1.2;
 }
 
 h1 {
-  font-size: 3em;
+  font-size: 2.6em;
   margin-top: 1em;
   margin-bottom: 0em;
   font-weight: 600;
@@ -399,6 +383,7 @@ center {
 }
 
 .author-date {
+  font-family: "Intel One Mono", monospace;
   font-weight: 400;
   font-size: 0.9em;
   color: #767676;
@@ -430,7 +415,14 @@ hr:after {
 @media (min-width: 1400px) {
   .content-wrapper,
   header > div {
-    max-width: var(--content-max-width);
+    max-width: 1100px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .content-wrapper,
+  header > div {
+    max-width: 1200px;
   }
 }
 
@@ -555,6 +547,10 @@ footer {
   opacity: 0.7;
 }
 
+.build-timestamp {
+  margin-top: 10px;
+}
+
 .privacy-policy-link {
   text-align: center;
   margin-top: 10px;
@@ -660,7 +656,7 @@ footer {
 }
 
 .toc-header {
-  font-family: "Newsreader", serif;
+  font-family: "Playfair Display", serif;
   font-weight: 600;
   font-size: 1.1em;
   margin-bottom: 15px;
@@ -746,17 +742,170 @@ footer {
 }
 
 /* Adjust main content for TOC */
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (max-width: 1399px) {
   .content-wrapper,
   header > div {
-    margin-left: 320px;
+    margin-left: 420px;
+    max-width: var(--content-max-width);
+    padding-right: calc(20px + 280px);
+  }
+  
+  /* Align home page headers with post headers */
+  body:not(.has-toc) .content-wrapper,
+  body:not(.has-toc) header > div {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--content-max-width);
+    padding-left: 20px;
+    padding-right: calc(20px + 280px);
   }
 }
 
-/* Hide TOC on smaller screens */
-@media (max-width: 1199px) {
+/* Hide TOC and margin notes on smaller screens */
+@media (max-width: 1399px) {
   .toc-sidebar {
-    display: none;
+    display: none !important;
+  }
+  
+  .margin-note-trigger,
+  span.margin-note-trigger {
+    display: none !important;
+  }
+  
+  .margin-note,
+  div.margin-note {
+    display: none !important;
+    visibility: hidden !important;
   }
 }
+
+/* Margin Notes Styles */
+.margin-note-trigger {
+  background-color: var(--highlight-color);
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: help;
+  transition: background-color 0.2s;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  position: relative;
+  display: inline-block;
+}
+
+.margin-note-trigger:hover {
+  background-color: rgba(137, 137, 222, 0.5);
+}
+
+.margin-note-trigger.active {
+  background-color: rgba(137, 137, 222, 0.6);
+  box-shadow: 0 0 0 2px rgba(137, 137, 222, 0.2);
+}
+
+.margin-note {
+  position: absolute;
+  left: calc(100% + 40px);
+  top: 0;
+  width: 280px;
+  font-size: 0.8em;
+  line-height: 1.3;
+  color: var(--text-color);
+  opacity: 1;
+  font-style: normal;
+  padding: 12px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px var(--tooltip-shadow-color);
+  z-index: 10;
+  display: block !important;
+  visibility: visible !important;
+  transition: opacity 0.3s ease, z-index 0s, box-shadow 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
+}
+
+.margin-note.active {
+  opacity: 1;
+  z-index: 100;
+  box-shadow: 0 4px 12px var(--tooltip-shadow-color);
+  transform: translateX(-3px);
+}
+
+.margin-note.dimmed {
+  opacity: 0.3;
+  z-index: 5;
+}
+
+
+/* Dark mode adjustments */
+.dark-mode .margin-note {
+  border-color: var(--border-color);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure content doesn't overflow horizontally */
+.content-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+/* For paragraphs containing margin notes */
+p:has(.margin-note) {
+  position: relative;
+}
+
+/* Adjust content width to accommodate margin notes on larger screens */
+@media (min-width: 1400px) {
+  .content-wrapper,
+  header > div {
+    max-width: 1100px;
+    margin-left: 450px;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: calc(40px + 320px);
+  }
+  
+  body.has-toc .content-wrapper,
+  body.has-toc header > div {
+    margin-left: 450px;
+    padding-right: calc(40px + 320px);
+    max-width: 1100px;
+  }
+  
+  body:not(.has-toc) .content-wrapper,
+  body:not(.has-toc) header > div {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1100px;
+    padding-left: 20px;
+    padding-right: calc(40px + 320px);
+  }
+}
+
+@media (min-width: 1600px) {
+  .content-wrapper,
+  header > div {
+    max-width: 1200px;
+    margin-left: 480px;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: calc(40px + 320px);
+  }
+  
+  body.has-toc .content-wrapper,
+  body.has-toc header > div {
+    margin-left: 480px;
+    padding-right: calc(40px + 320px);
+    max-width: 1200px;
+  }
+  
+  body:not(.has-toc) .content-wrapper,
+  body:not(.has-toc) header > div {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    padding-left: 20px;
+    padding-right: calc(40px + 320px);
+  }
+}
+
 

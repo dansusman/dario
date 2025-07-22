@@ -16,11 +16,22 @@
             {{- end }}
 
             <section>
+                <h3>TILs</h3>
+                <ul>
+                    {{ range where .Site.RegularPages "Params.type" "til" }}
+                    <li>
+                        <a href="{{ .Permalink }}">{{ .Title }}</a> {{ partial "reading_time.html" . }}
+                    </li>
+                    {{ end }}
+                </ul>
+            </section>
+
+            <section>
                 <h3>Short posts</h3>
                 <ul>
                     {{ range where .Site.RegularPages "Params.type" "short" }}
                     <li>
-                        <a href="{{ .Permalink }}">{{ .Title }}</a>
+                        <a href="{{ .Permalink }}">{{ .Title }}</a> {{ partial "reading_time.html" . }}
                     </li>
                     {{ end }}
                 </ul>
@@ -31,7 +42,7 @@
                 <ul>
                     {{ range where .Site.RegularPages "Params.type" "essay" }}
                     <li>
-                        <a href="{{ .Permalink }}">{{ .Title }}</a>
+                        <a href="{{ .Permalink }}">{{ .Title }}</a> {{ partial "reading_time.html" . }}
                     </li>
                     {{ end }}
                 </ul>

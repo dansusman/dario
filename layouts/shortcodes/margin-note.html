@@ -1,0 +1,5 @@
+{{- $id := .Get "id" | default (printf "note-%d" now.UnixNano) -}}
+{{- $text := .Get "text" -}}
+{{- $note := .Inner -}}
+<span class="margin-note-trigger" data-note-id="{{ $id }}" data-note="{{ $text }}">{{ $text }}</span>
+<div class="margin-note" data-note-id="{{ $id }}">{{ $note | markdownify }}</div>

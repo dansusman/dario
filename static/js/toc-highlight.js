@@ -34,53 +34,88 @@
         }
     }
 
-    // Intersection Observer for tracking visible headings
-    const observerOptions = {
-        root: null,
-        rootMargin: '-10% 0px -70% 0px',
-        threshold: 0
-    };
-
     // Track if user has started scrolling
     let userHasScrolled = false;
     let scrollTimeout;
     
-    // Listen for scroll events to detect user scrolling
-    window.addEventListener('scroll', () => {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            userHasScrolled = true;
-        }, 100); // Small delay to avoid immediate triggering
-    });
-
-    const observer = new IntersectionObserver((entries) => {
+    // Function to find the currently active heading based on scroll position
+    function findActiveHeading() {
         // If there's a hash in the URL and user hasn't scrolled yet, prioritize that
         const currentHash = window.location.hash;
         if (currentHash && !userHasScrolled) {
             const hashTarget = document.getElementById(currentHash.substring(1));
             if (hashTarget) {
-                setActiveLink(hashTarget);
-                return;
+                return hashTarget;
+            }
+        }
+
+        const scrollPosition = window.scrollY;
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // If we're at the very bottom of the page, activate the last heading
+        if (scrollPosition + viewportHeight >= documentHeight - 10) {
+            const headingsWithIds = Array.from(headings).filter(h => h.id && headingToLink.has(h.id));
+            if (headingsWithIds.length > 0) {
+                return headingsWithIds[headingsWithIds.length - 1];
             }
         }
         
-        let visibleHeadings = entries
-            .filter(entry => entry.isIntersecting)
-            .map(entry => entry.target);
-
-        if (visibleHeadings.length > 0) {
-            // Get the topmost visible heading
-            const topHeading = visibleHeadings.reduce((prev, current) => {
-                return prev.offsetTop < current.offsetTop ? prev : current;
-            });
-            setActiveLink(topHeading);
+        // Find the heading that's currently most visible
+        // We want the heading that's closest to being at the top 20% of viewport
+        const targetPosition = scrollPosition + viewportHeight * 0.2;
+        
+        let activeHeading = null;
+        let smallestDistance = Infinity;
+        
+        headings.forEach(heading => {
+            if (heading.id && headingToLink.has(heading.id)) {
+                const headingTop = heading.offsetTop;
+                
+                // If heading is above the target position, it's a candidate
+                if (headingTop <= targetPosition) {
+                    const distance = targetPosition - headingTop;
+                    if (distance < smallestDistance) {
+                        smallestDistance = distance;
+                        activeHeading = heading;
+                    }
+                }
+            }
+        });
+        
+        // If no heading is above the target position, use the first one
+        if (!activeHeading && headings.length > 0) {
+            const firstHeading = Array.from(headings).find(h => h.id && headingToLink.has(h.id));
+            if (firstHeading) {
+                activeHeading = firstHeading;
+            }
         }
-    }, observerOptions);
-
-    // Observe all headings
-    headings.forEach(heading => {
-        if (heading.id) {
-            observer.observe(heading);
+        
+        return activeHeading;
+    }
+    
+    // Function to update TOC highlighting based on scroll position
+    function updateTocHighlight() {
+        const activeHeading = findActiveHeading();
+        if (activeHeading) {
+            setActiveLink(activeHeading);
+        }
+    }
+    
+    // Listen for scroll events
+    let isScrolling = false;
+    window.addEventListener('scroll', () => {
+        // Immediately clear the hash override when user starts scrolling
+        userHasScrolled = true;
+        clearTimeout(scrollTimeout);
+        
+        // Use requestAnimationFrame for smooth updates
+        if (!isScrolling) {
+            requestAnimationFrame(() => {
+                updateTocHighlight();
+                isScrolling = false;
+            });
+            isScrolling = true;
         }
     });
 
@@ -110,29 +145,15 @@
         });
     });
 
-    // Set initial active link based on URL hash
+    // Set initial active link based on URL hash or scroll position
     function setInitialActiveLink() {
-        const hash = window.location.hash;
-        if (hash) {
-            const target = document.getElementById(hash.substring(1));
-            if (target) {
-                setActiveLink(target);
-            }
-        } else if (headings.length > 0) {
-            // Set first heading as active if no hash
-            setActiveLink(headings[0]);
-        }
+        updateTocHighlight();
     }
 
-    // Listen for URL hash changes (second form of auth)
+    // Listen for URL hash changes
     function handleHashChange() {
-        const hash = window.location.hash;
-        if (hash) {
-            const target = document.getElementById(hash.substring(1));
-            if (target) {
-                setActiveLink(target);
-            }
-        }
+        userHasScrolled = false; // Reset scroll tracking for hash changes
+        updateTocHighlight();
     }
 
     // Listen for hash changes in URL

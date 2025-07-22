@@ -3,12 +3,9 @@
     const root = document.documentElement;
     const classes = ["preload"];
 
-    // Default to dark mode if not set in localStorage
+    // Default to light mode if not set in localStorage
     if (localStorage.getItem("darkMode") === null) {
-      const isSystemInDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      localStorage.setItem("darkMode", isSystemInDark ? "enabled" : "disabled");
+      localStorage.setItem("darkMode", "disabled");
     }
 
     if (localStorage.getItem("darkMode") === "enabled") {

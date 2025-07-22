@@ -1,5 +1,14 @@
 <footer>
     <div class="footer-content">
-        <p>&copy; {{ now.Year }} - {{ .Site.Title }}</p>
+        <div>
+            &copy; {{ now.Year }} - {{ .Site.Title }}
+            {{ if .File }}
+            <span class="fix-typo-separator">•</span>
+            <a href="https://github.com/dansusman/dansusman.github.io/edit/main/content/{{ .File.Path }}" target="_blank" rel="noopener">Fix typo</a>
+            {{ end }}
+        </div>
+        <div class="build-timestamp">
+            Last build on: {{ now.Format "January 2, 2006 at 3:04 PM MST" }}
+        </div>
     </div>
 </footer>
